@@ -2,8 +2,11 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation"; // Correct import for Next.js App Router
 
 export default function Home() {
+  const router = useRouter();
+
   const images = [
     "/image1.jpg",
     "/image2.jpg",
@@ -42,10 +45,18 @@ export default function Home() {
           <li><a href="#" className="text-[#00AEEF] hover:text-[#A020F0] transition">Home</a></li>
           <li><a href="#comments" className="text-[#00AEEF] hover:text-[#A020F0] transition">Comments</a></li>
           <li><a href="#sections" className="text-[#00AEEF] hover:text-[#A020F0] transition">Anime List</a></li>
-          <li><button className="bg-[#00AEEF] text-black px-4 py-2 rounded-lg hover:bg-[#A020F0] hover:text-white transition">Login</button></li>
+          {/* Fixed Login Button with Correct Path */}
+          <li>
+            <button 
+              onClick={() => router.push("./Login-Page")} 
+              className="bg-[#00AEEF] text-black px-4 py-2 rounded-lg hover:bg-[#A020F0] hover:text-white transition"
+            >
+              Login
+            </button>
+          </li>
         </ul>
       </header>
-      
+
       {/* Image Slider */}
       <section className="relative w-full h-[500px] overflow-hidden">
         <div className="absolute inset-0 flex transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
@@ -57,7 +68,7 @@ export default function Home() {
         <button onClick={nextSlide} className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#00AEEF] text-black p-2 rounded-full hover:bg-[#A020F0] hover:text-white">▶</button>
       </section>
 
-      {/* Comments Section (Now Horizontal) */}
+      {/* Comments Section */}
       <section id="comments" className="py-10 text-center">
         <h2 className="text-2xl font-bold text-[#00AEEF] mb-6">💬 Comments</h2>
         <div className="flex space-x-6 overflow-x-auto scrollbar-hide px-6">
@@ -84,7 +95,7 @@ export default function Home() {
         ))}
       </section>
 
-      {/* Footer (Unchanged) */}
+      {/* Footer */}
       <footer className="bg-gray-900 text-white text-center py-6 mt-auto">
         <p>&copy; {new Date().getFullYear()} Anime Hub. All rights reserved.</p>
       </footer>
