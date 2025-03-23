@@ -58,6 +58,7 @@ export default function SignupPage() {
             <div className="inputBox">
               <input type="submit" value="Sign Up" />
             </div>
+
           </form>
         </div>
       </div>
