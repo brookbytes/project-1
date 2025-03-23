@@ -1,85 +1,73 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import "./login.css"; // Import login-specific styles
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
-    if (!email || !password) {
-      setError("⚠️ Email and Password are required!");
-      return;
-    }
-
-    if (email === "user@example.com" && password === "password") {
-      localStorage.setItem("isLoggedIn", "true");
-      window.dispatchEvent(new Event("storage")); // 🔹 Update across all pages
-      router.push("/dashboard"); // Redirect after login
-    } else {
-      setError("❌ Invalid email or password!");
-    }
-  };
+  useEffect(() => {
+    // This ensures styles are only applied on the client-side
+    setIsClient(true);
+  }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 relative">
-      {/* 🔹 Back Button in Top-Left */}
-      <button
-        onClick={() => router.push("/")} // Navigate to Home Page
-        className="absolute top-4 left-4 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
-      >
-        ← Back to Home
-      </button>
+    <section className={isClient ? "login-page" : ""}>
+      {/* Animated Background Blocks */}
+      {[...Array(196)].map((_, i) => (
+        <span key={i}></span>
+      ))}
 
-      <div className="bg-white p-8 rounded-lg shadow-lg w-96 relative">
-        <h2 className="text-2xl font-semibold text-center text-gray-800">Login</h2>
-        {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
-        
-        <form onSubmit={handleLogin} className="space-y-4 mt-4">
-          <div>
-            <label className="block text-gray-700">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your password"
-              required
-            />
-          </div>
-          <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
-            Login
-          </button>
-        </form>
-
-        {/* 🔹 Navigate to Sign Up Page */}
-        <p className="text-center text-gray-600 text-sm mt-4">
-          Don't have an account?{" "}
-          <button
-            onClick={() => router.push("./Signup-Page")} // Navigate to Sign Up Page
-            className="text-blue-500 hover:underline"
-          >
-            Sign Up
-          </button>
-        </p>
+<div className="login">
+  <div className="content">
+    <div className="title"><b>Login</b></div>
+    <br />
+    <form className="form">
+      {/* Username Field */}
+      <div className="inputBox">
+        <input
+          type="text"
+          required
+          placeholder="Enter Username"
+         
+        />
       </div>
-    </div>
+      <br />
+      {/* Password Field */}
+      <div className="inputBox">
+        <input
+          type="password"
+          required
+          placeholder="Enter Password"
+          
+        />
+      </div>
+    <br />
+      {/* Links (Forgot Password & Signup) */}
+      <div className="links">
+        <Link href="#" className="hover:text-blue-500 transition">
+          Forgot Password?
+        </Link>
+        <Link href="./Signup-Page" className="hover:text-blue-500 transition">
+          Signup
+        </Link>
+      </div>
+      
+
+      {/* Submit Button */}
+      <div className="button">
+        <input
+          type="submit"
+          value="Login"
+          className="w-full h-12 p-3 text-lg font-semibold text-white bg-blue-600 rounded-lg hover:bg-green-700 transition"
+        />
+      </div>
+    </form>
+  </div>
+</div>
+
+    </section>
   );
 }
+
