@@ -1,91 +1,215 @@
 /* Apply styles only inside the login page */
 .login-page {
-    position: absolute;
-    width: 100vw;
-    height: 100vh;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: wrap;
+  overflow: hidden;
+}
+
+/* Background Animation */
+.login-page::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(#000, rgb(255, 0, 238), #000);
+  animation: animate 5s linear infinite;
+  z-index: 1;
+  opacity: 0.5;
+}
+
+/* Animation Keyframes */
+@keyframes animate {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+/* Animated Blocks */
+.login-page span {
+  position: relative;
+  display: block;
+  width: calc(6.25vw - 2px);
+  height: calc(6.25vw - 2px);
+  background: #181818;
+  z-index: 2;
+  transition: 1.5s;
+}
+
+.login-page span:hover {
+  background: rgb(183, 0, 255);
+  transition: 0s;
+}
+
+/* Login Form */
+.login {
+  position: absolute;
+  width: 400px;
+  max-width: 80%; /* Makes it responsive */
+  background: #f1eeee;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  
+  border-radius: 8px;
+  box-shadow: 0 15px 35px rgba(126, 122, 122, 0.9);
+}
+
+.title {
+  font-size: 1.2rem; /* Responsive font size */
+  text-align: center;
+}
+
+/* Form Fields */
+.content .form .inputBox {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.content .form .inputBox input {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #ccc;
+  outline: none;
+  padding: 15px;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #000;
+  transition: all 0.3s ease;
+}
+
+/* Floating Labels Fix */
+.content .form .inputBox input:focus ~ i,
+.content .form .inputBox input:not(:placeholder-shown) ~ i {
+  transform: translateY(-20px);
+  font-size: 0.8rem;
+  color: rgb(183, 0, 255);
+}
+
+/* Submit Button */
+.content .form .inputBox input[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  background: rgb(183, 0, 255);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.content .form .inputBox input[type="submit"]:hover {
+  background: rgb(255, 0, 238);
+}
+
+/* 🔹 Responsive Design for Tablets */
+@media (max-width: 1024px) {
+  .login-page {
+    width: 100vw; /* ✅ Ensures full width */
+    min-height: 100vh; /* ✅ Prevents shrinking */
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 2px;
     flex-wrap: wrap;
-    overflow: hidden;
-  }
-  
-  .login-page::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(#000, rgb(255, 0, 238), #000);
-    animation: animate 5s linear infinite;
-    z-index: 1;
-    opacity: 0.5;
-  }
-  
-  /* Animation Keyframes */
-  @keyframes animate {
-    0% {
-      transform: translateY(-100%);
-    }
-    100% {
-      transform: translateY(100%);
-    }
-  }
-  
-  /* Grid animation blocks */
-  .login-page span {
-    position: relative;
-    display: block;
-    width: calc(6.25vw - 2px);
-    height: calc(6.25vw - 2px);
-    background: #181818;
-    z-index: 2;
-    transition: 1.5s;
-  }
-  
-  .login-page span:hover {
-    background: rgb(183, 0, 255);
-    transition: 0s;
-  }
-  
-  /* Login Form */
-  .login {
-    position: absolute;
-    width: 400px;
-    background: #f1eeee;
-    z-index: 1000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 40px;
-    border-radius: 4px;
-    box-shadow: 0 15px 35px rgba(126, 122, 122, 0.9);
-  }
-  .title{
-    font-size: 19;
-    
+    padding: 10px;
   }
 
-  
-  
-  
-   .content .form .inputBox input {
-    width: 100%;
-    background: #ffffff;
-    border: none;
-    outline: none;
-    padding: 25px 10px 7.5px;
-    border-radius: 4px;
-    color: #000000;
-    font-weight: 500;
-    font-size: 1em;
+  .login-page span {
+    width: calc(8vw - 2px); /* ✅ Adjust block size */
+    height: calc(8vw - 2px);
   }
-  
-  
-  
-  .content .form .inputBox input:focus ~ i,
-   .content .form .inputBox input:valid ~ i {
-    transform: translateY(-7.5px);
-    font-size: 0.8em;
-    color: #fff;
+}
+
+/* 🔹 Responsive Design for Medium Screens (Tablets & Small Laptops) */
+@media (max-width: 780px) {
+  .login-page {
+    width: 100vw;
+    min-height: 100vh;
+    padding: 10px;
   }
+
+  .login {
+    width: 85%;
+    padding: 25px;
+  }
+
+  .title {
+    font-size: 1rem;
+  }
+
+  .content .form .inputBox input {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+
+  .content .form .inputBox input[type="submit"] {
+    font-size: 1rem;
+    padding: 10px;
+  }
+}
+
+/* 🔹 Extra Small Screens (Phones) */
+@media (max-width: 480px) {
+  .login-page {
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  .login {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .title {
+    font-size: 0.9rem;
+  }
+
+  .content .form .inputBox input {
+    font-size: 0.85rem;
+  }
+
+  .content .form .inputBox input[type="submit"] {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+}
+
+/* 🔹 Responsive Fix for Small Screens */
+@media (max-width: 768px) {
+  .login-page span {
+    width: calc(10vw - 2px);
+    height: calc(10vw - 2px);
+  }
+
+  .login-page::before {
+    animation: animate 7s linear infinite; /* ✅ Adjust animation speed */
+  }
+}
+
+@media (max-width: 480px) {
+  .login-page span {
+    width: calc(15vw - 2px);
+    height: calc(15vw - 2px);
+  }
+
+  .login-page::before {
+    animation: animate 9s linear infinite; /* ✅ Slower for mobile */
+  }
+}
