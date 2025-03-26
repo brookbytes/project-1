@@ -55,6 +55,9 @@ export default function SignupPage() {
             <div className="links">
               <Link href="./Login-Page">Already have an account? Login</Link>
             </div>
+            <Link href="./Landing-page" className="links text-[white] hover:text-blue-500 transition">
+            Back to Home !!!
+        </Link>
             <div className="inputBox">
               <input type="submit" value="Sign Up" />
             </div>

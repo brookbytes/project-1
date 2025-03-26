@@ -49,9 +49,15 @@ export default function LoginPage() {
         <Link href="#" className="hover:text-blue-500 transition">
           Forgot Password?
         </Link>
+        
         <Link href="./Signup-Page" className="hover:text-blue-500 transition">
           Signup
         </Link>
+      <br />
+        <Link href="./Landing-page" className=" links hover:text-blue-500 transition">
+            Back to Home !!!
+        </Link>
+        
       </div>
       
 
