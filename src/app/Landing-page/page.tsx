@@ -79,13 +79,7 @@ export default function Home() {
             bottom: 0,
           }}
         >
-          <Image
-            src={images[currentIndex]} // ✅ Uses the state value
-            alt="Anime Background"
-            layout="fill"
-            objectFit="cover"
-            style={{ opacity: 0.5 }}
-          />
+          
         </div>
         <div
           style={{
