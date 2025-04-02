@@ -5,34 +5,78 @@ import Image from "next/image";
 
 export default function Home() {
   const scrollContainerRef = useRef(null);
-  const images = ["/image1.jpg", "/image2.jpg", "/image3.jpg"]; // ✅ Placeholder images
-  const [currentIndex, setCurrentIndex] = useState(0); // ✅ Initial state for index
+  const [animeData, setAnimeData] = useState({
+    "Currently Airing": [],
+    Popular: [],
+    "Latest Completed": [],
+  });
 
-  // ✅ Drag Scroll Logic (Fixed)
+  // Fetch anime data from Jikan API
+  useEffect(() => {
+    const fetchAnimeData = async () => {
+      try {
+        const categories = {
+          "Currently Airing": "airing",
+          Popular: "bypopularity",
+          "Latest Completed": "upcoming",
+        };
+
+        const data = await Promise.all(
+          Object.entries(categories).map(async ([key, endpoint]) => {
+            const response = await fetch(
+              `https://api.jikan.moe/v4/top/anime?filter=${endpoint}&limit=10`
+            );
+            const result = await response.json();
+            return { [key]: result.data };
+          })
+        );
+
+        setAnimeData(Object.assign({}, ...data));
+      } catch (error) {
+        console.error("Failed to fetch anime data:", error);
+      }
+    };
+
+    fetchAnimeData(); // Initial fetch
+
+    const intervalId = setInterval(fetchAnimeData, 600000); // Update every 10 minutes
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+  }, []);
+
+  // Drag Scroll Logic
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) return;
 
-    let isDown = false;
-    let startX;
-    let scrollLeft;
+    let isDragging = false;
+    let startX: number;
+    let scrollLeft: number;
 
-    const startDragging = (e) => {
-      isDown = true;
-      startX = e.pageX || e.touches[0].pageX;
+    const startDragging = (e: MouseEvent | TouchEvent) => {
+      isDragging = true;
+      if (e instanceof MouseEvent) {
+        startX = e.pageX - scrollContainer.offsetLeft;
+      } else if (e instanceof TouchEvent) {
+        startX = e.touches[0].pageX - scrollContainer.offsetLeft;
+      }
       scrollLeft = scrollContainer.scrollLeft;
     };
 
-    const onMove = (e) => {
-      if (!isDown) return;
-      e.preventDefault();
-      const x = e.pageX || e.touches[0].pageX;
+    const onMove = (e: MouseEvent | TouchEvent) => {
+      if (!isDragging) return;
+      let x: number;
+      if (e instanceof MouseEvent) {
+        x = e.pageX - scrollContainer.offsetLeft;
+      } else if (e instanceof TouchEvent) {
+        x = e.touches[0].pageX - scrollContainer.offsetLeft;
+      }
       const walk = (x - startX) * 1.5;
       scrollContainer.scrollLeft = scrollLeft - walk;
     };
 
     const stopDragging = () => {
-      isDown = false;
+      isDragging = false;
     };
 
     scrollContainer.addEventListener("mousedown", startDragging);
@@ -56,7 +100,7 @@ export default function Home() {
 
   return (
     <main className="bg-black text-white min-h-screen font-sans overflow-x-hidden">
-      {/* ✅ Hero Section */}
+      {/* Hero Section */}
       <section
         style={{
           position: "relative",
@@ -78,9 +122,7 @@ export default function Home() {
             right: 0,
             bottom: 0,
           }}
-        >
-          
-        </div>
+        ></div>
         <div
           style={{
             position: "relative",
@@ -117,114 +159,101 @@ export default function Home() {
               cursor: "pointer",
               fontFamily: "monospace, 'Courier New', Courier, Consolas",
             }}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#b91c1c")}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#dc2626")}
+            onMouseOver={(e) =>
+              (e.currentTarget.style.backgroundColor = "#b91c1c")
+            }
+            onMouseOut={(e) =>
+              (e.currentTarget.style.backgroundColor = "#dc2626")
+            }
           >
             Explore Now
           </button>
         </div>
       </section>
 
-      {/* ✅ Anime Sections */}
+      {/* Anime Sections */}
       <section
         id="sections"
-        className="py-10 px-6 max-w-7xl mx-auto"
-        style={{
-          fontFamily: "monospace, 'Courier New', Courier, Consolas",
-          marginTop: "48px",
-          minHeight: "700px",
-          overflow: "hidden",
-        }}
+        className="py-10 px-6 max-w-7xl mx-auto space-y-12"
       >
-        {["Currently Airing", "Popular", "Latest Completed"].map((category, i) => (
-          <div key={i} className="mb-10">
-            <h2 className="text-2xl font-bold mb-4">{category}</h2>
-
-            <div className="relative">
-              <div
-                ref={scrollContainerRef}
-                className="flex overflow-x-auto scroll-smooth touch-scroll ultra-slim-scrollbar draggable-scroll"
-                style={{
-                  gap: "20px",
-                  padding: "10px",
-                  paddingBottom: "10px",
-                  scrollSnapType: "x proximity",
-                  WebkitOverflowScrolling: "touch",
-                  cursor: "grab",
-                  touchAction: "pan-x",
-                  overflowX: "auto",
-                }}
-              >
-                {[...Array(10)].map((_, index) => (
+        {Object.entries(animeData).map(([category, animes], i) => (
+          <div key={i} className="mb-8">
+            <h2 className="text-2xl font-bold mb-6 pl-4">{category}</h2>
+            <div
+              ref={scrollContainerRef}
+              className="grid grid-flow-col auto-cols-max gap-6 overflow-x-auto pb-6 px-4 scroll-smooth touch-scroll ultra-slim-scrollbar"
+              style={{
+                scrollSnapType: "x mandatory",
+                scrollPadding: "0 24px",
+              }}
+            >
+              {animes && animes.length > 0 ? (
+                animes.map((anime, index) => (
                   <div
                     key={index}
-                    className="bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col items-center text-center flex-none transition-transform duration-300 hover:scale-105 hover:shadow-xl"
-                    style={{
-                      width: "187px",
-                      height: "298px",
-                      fontFamily: "monospace, 'Courier New', Courier, Consolas",
-                      scrollSnapAlign: "center",
-                      border: "2px solid transparent",
-                      transform: "translateZ(0)",
-                    }}
+                    className="group w-[180px] bg-gray-800/40 backdrop-blur-sm rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-red-500/20 hover:shadow-xl border border-gray-700/30"
+                    style={{ scrollSnapAlign: "start" }}
                   >
-                    <Image
-                      src={`/image${index + 1}.jpg`}
-                      alt="Anime Image"
-                      width={170}
-                      height={238}
-                      className="rounded-lg object-cover"
-                    />
-                    <h3 className="text-lg font-semibold mt-2">Anime {index + 1}</h3>
-                    <p className="text-sm text-gray-300">
-                      Exciting anime series with great storyline and animation.
-                    </p>
-                    <button className="mt-2 bg-red-600 px-4 py-2 text-sm rounded hover:bg-red-700">
-                      View Details
-                    </button>
+                    <div className="relative aspect-[3/4] overflow-hidden">
+                      <Image
+                        src={anime.images.jpg.image_url}
+                        alt={anime.title}
+                        fill
+                        className="object-cover transform transition-transform duration-300 group-hover:scale-110"
+                        sizes="180px"
+                        priority={index < 3}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
+                    <div className="p-3 flex flex-col min-h-[120px] justify-between">
+                      <div>
+                        <h3 className="font-semibold text-sm mb-1.5 line-clamp-2 text-gray-100 leading-tight">
+                          {anime.title}
+                        </h3>
+                        <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
+                          {anime.synopsis?.substring(0, 70) ||
+                            "No synopsis available."}
+                          ...
+                        </p>
+                      </div>
+                      <button className="w-full bg-red-600/80 py-1.5 text-xs font-medium rounded-md hover:bg-red-600 transition-colors duration-200 backdrop-blur-sm mt-3">
+                        View Details
+                      </button>
+                    </div>
                   </div>
-                ))}
-              </div>
+                ))
+              ) : (
+                <p className="text-gray-400">No data available.</p>
+              )}
             </div>
           </div>
         ))}
       </section>
 
-      {/* ✅ Custom Scrollbar Styles */}
-      <style>
-        {`
-          .ultra-slim-scrollbar::-webkit-scrollbar {
-            height: 3px;
-            width: 3px;
-          }
+      <style jsx global>{`
+        .ultra-slim-scrollbar::-webkit-scrollbar {
+          height: 4px;
+        }
 
-          .ultra-slim-scrollbar::-webkit-scrollbar-thumb {
-            background: red;
-            border-radius: 10px;
-          }
+        .ultra-slim-scrollbar::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 4px;
+        }
 
-          .ultra-slim-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-          }
+        .ultra-slim-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.3);
+          border-radius: 4px;
+        }
 
-          .touch-scroll {
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-          }
+        .ultra-slim-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.4);
+        }
 
-          .draggable-scroll {
-            overflow-x: auto;
-            cursor: grab;
-            user-select: none;
-            -webkit-overflow-scrolling: touch;
-            touch-action: pan-x;
-          }
-
-          .draggable-scroll:active {
-            cursor: grabbing;
-          }
-        `}
-      </style>
+        .touch-scroll {
+          -webkit-overflow-scrolling: touch;
+          scroll-behavior: smooth;
+        }
+      `}</style>
     </main>
   );
 }
