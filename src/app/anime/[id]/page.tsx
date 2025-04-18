@@ -4,12 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
+import React from "react";
 
 interface AnimeDetailsProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 async function getAnimeDetails(id: string) {
@@ -27,6 +28,8 @@ async function getRelatedAnime(id: string) {
 }
 
 export default function AnimeDetails({ params }: AnimeDetailsProps) {
+  const { id } = use(params);
+
   const [anime, setAnime] = useState<any>(null);
   const [relatedAnime, setRelatedAnime] = useState<any[]>([]);
   const [sliderRef] = useKeenSlider<HTMLDivElement>({
@@ -44,13 +47,13 @@ export default function AnimeDetails({ params }: AnimeDetailsProps) {
 
   useEffect(() => {
     async function fetchData() {
-      const a = await getAnimeDetails(params.id);
-      const related = await getRelatedAnime(params.id);
+      const a = await getAnimeDetails(id);
+      const related = await getRelatedAnime(id);
       setAnime(a);
       setRelatedAnime(related);
     }
     fetchData();
-  }, [params.id]);
+  }, [id]);
 
   if (!anime) {
     return (
@@ -87,35 +90,31 @@ export default function AnimeDetails({ params }: AnimeDetailsProps) {
           </div>
         </div>
 
-        {/* Information Section */}
-        <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6 text-sm text-gray-300 space-y-4">
-          <h2 className="text-xl font-bold text-white mb-4 border-b border-gray-700 pb-2">ℹ️ Information</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-2 gap-x-6">
-            <p><strong>Type:</strong> {anime.type || "N/A"}</p>
-            <p><strong>Episodes:</strong> {anime.episodes ?? "?"}</p>
-            <p><strong>Status:</strong> {anime.status || "?"}</p>
-            <p><strong>Aired:</strong> {anime.aired?.string || "?"}</p>
-            <p><strong>Premiered:</strong> {anime.season ? `${anime.season[0].toUpperCase()}${anime.season.slice(1)} ${anime.year}` : "?"}</p>
-            <p><strong>Broadcast:</strong> {anime.broadcast?.string || "?"}</p>
-            <p><strong>Producers:</strong> {anime.producers?.map((p: any) => p.name).join(", ") || "?"}</p>
-            <p><strong>Licensors:</strong> {anime.licensors?.map((l: any) => l.name).join(", ") || "None found"}</p>
-            <p><strong>Studios:</strong> {anime.studios?.map((s: any) => s.name).join(", ") || "?"}</p>
-            <p><strong>Source:</strong> {anime.source || "?"}</p>
-            <p><strong>Duration:</strong> {anime.duration || "?"}</p>
-            <p><strong>Rating:</strong> {anime.rating || "?"}</p>
-          </div>
+        {/* Centered Information Section */}
+        <div className="flex justify-center items-center">
+          <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6 text-sm text-gray-300 space-y-4 w-[1000px] h-[250px] overflow-y-auto">
+            <h2 className="text-xl font-bold text-white mb-4 border-b border-gray-700 pb-2">ℹ️ Information</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-2 gap-x-6">
+              <p><strong>Type:</strong> {anime.type || "N/A"}</p>
+              <p><strong>Episodes:</strong> {anime.episodes ?? "?"}</p>
+              <p><strong>Status:</strong> {anime.status || "?"}</p>
+              <p><strong>Aired:</strong> {anime.aired?.string || "?"}</p>
+              <p><strong>Premiered:</strong> {anime.season ? `${anime.season[0].toUpperCase()}${anime.season.slice(1)} ${anime.year}` : "?"}</p>
+              <p><strong>Broadcast:</strong> {anime.broadcast?.string || "?"}</p>
+              <p><strong>Producers:</strong> {anime.producers?.map((p: any) => p.name).join(", ") || "?"}</p>
+              <p><strong>Licensors:</strong> {anime.licensors?.map((l: any) => l.name).join(", ") || "None found"}</p>
+              <p><strong>Studios:</strong> {anime.studios?.map((s: any) => s.name).join(", ") || "?"}</p>
+              <p><strong>Source:</strong> {anime.source || "?"}</p>
+              <p><strong>Duration:</strong> {anime.duration || "?"}</p>
+              <p><strong>Rating:</strong> {anime.rating || "?"}</p>
+              <p><strong>Genres:</strong> {anime.genres?.map((g: any) => g.name).join(", ") || "N/A"}</p>
+            </div>
 
-          {/* Tags */}
-          <div className="mt-6 flex flex-wrap gap-2">
-            {anime.genres?.map((g: any) => (
-              <span key={g.mal_id} className="bg-red-600/70 text-white px-2 py-1 rounded text-xs">{g.name}</span>
-            ))}
-            {anime.themes?.map((t: any) => (
-              <span key={t.mal_id} className="bg-purple-600/70 text-white px-2 py-1 rounded text-xs">{t.name}</span>
-            ))}
-            {anime.demographics?.map((d: any) => (
-              <span key={d.mal_id} className="bg-blue-600/70 text-white px-2 py-1 rounded text-xs">{d.name}</span>
-            ))}
+            {/* Tags (Plain) */}
+            <div className="mt-6 space-y-1 text-sm">
+              <p><strong>Themes:</strong> {anime.themes?.map((t: any) => t.name).join(", ") || "N/A"}</p>
+              <p><strong>Demographics:</strong> {anime.demographics?.map((d: any) => d.name).join(", ") || "N/A"}</p>
+            </div>
           </div>
         </div>
 
@@ -123,15 +122,20 @@ export default function AnimeDetails({ params }: AnimeDetailsProps) {
         {anime.trailer?.youtube_id && (
           <div className="w-full flex flex-col items-center text-center">
             <h2 className="text-2xl font-bold mb-4 border-b border-gray-700 pb-2 w-full">🎬 Watch Trailer</h2>
-            <div className="w-full max-w-3xl aspect-video rounded-lg overflow-hidden shadow-lg border border-gray-700 hover:scale-105 transition-transform duration-300">
-              <iframe
-                className="w-full h-full"
-                src={`https://www.youtube.com/embed/${anime.trailer.youtube_id}`}
-                title="Trailer"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
+            <div
+              className="w-full max-w-3xl aspect-video rounded-lg overflow-hidden shadow-lg border border-gray-700 transition-transform duration-300"
+              style={{ transformOrigin: 'center' }}
+            >
+              <div className="hover:scale-105 transition-transform duration-300 w-full h-full">
+                <iframe
+                  className="w-full h-full"
+                  src={`https://www.youtube.com/embed/${anime.trailer.youtube_id}`}
+                  title="Trailer"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
             </div>
           </div>
         )}

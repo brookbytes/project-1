@@ -51,9 +51,9 @@ export default function Home() {
       const dataPopular: ApiResponse = await resPopular.json();
       const dataUpcoming: ApiResponse = await resUpcoming.json();
 
-      setCurrentlyAiring(removeDuplicates(dataAiring.data).slice(0, 15));
-      setPopularAnime(removeDuplicates(dataPopular.data).slice(0, 15));
-      setUpcomingAnime(removeDuplicates(dataUpcoming.data).slice(0, 15));
+      setCurrentlyAiring(removeDuplicates(dataAiring?.data ?? []).slice(0, 15));
+      setPopularAnime(removeDuplicates(dataPopular?.data ?? []).slice(0, 15));
+      setUpcomingAnime(removeDuplicates(dataUpcoming?.data ?? []).slice(0, 15));
     } catch (error) {
       console.error("Error fetching anime data:", error);
     } finally {
@@ -83,7 +83,7 @@ export default function Home() {
       key: "popular",
       title: "Popular",
       data: popularAnime,
-      animateClass: "animate-scroll-ltr", // 👈 CHANGED TO LTR
+      animateClass: "animate-scroll-ltr",
       ref: scrollRefs.popular,
     },
     {
